@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAT Calculator Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background-color: #3a7bc8;
+        }
+
+        .btn-secondary {
+            background-color: #e1e4e8;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5da;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .result-label {
+            color: #666;
+        }
+
+        .result-value {
+            font-weight: 500;
+        }
+
+        .calculation-type {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calc-type {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .calc-type.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .custom-rate-group {
+            display: none;
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            margin-top: auto;
+        }
+
+        .footer-content {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .heart {
+            color: #e74c3c;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-calculator"></i> VAT Calculator</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="calculation-type">
+                <div class="calc-type active" data-type="add">Add VAT</div>
+                <div class="calc-type" data-type="remove">Remove VAT</div>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" placeholder="Enter amount" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="vat-rate">VAT Rate</label>
+                <select id="vat-rate">
+                    <option value="5">5%</option>
+                    <option value="10">10%</option>
+                    <option value="15">15%</option>
+                    <option value="20" selected>20%</option>
+                    <option value="25">25%</option>
+                    <option value="custom">Custom Rate</option>
+                </select>
+                <div class="custom-rate-group" id="custom-rate-group">
+                    <input type="number" id="custom-rate" placeholder="Enter custom rate" step="0.1" min="0" max="100">
+                </div>
+            </div>
+
+            <button class="btn" id="calculate">Calculate</button>
+            <button class="btn btn-secondary" id="reset">Reset</button>
+
+            <div class="results" id="results">
+                <h3 style="margin-bottom: 15px;">Calculation Results</h3>
+                <div class="result-item">
+                    <span class="result-label" id="label1">Original Amount:</span>
+                    <span class="result-value" id="value1">0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label" id="label2">VAT Amount:</span>
+                    <span class="result-value" id="value2">0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label" id="label3">Total Amount:</span>
+                    <span class="result-value" id="value3">0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            Made with <span class="heart">❤️</span> by Sauravhhh
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculation type toggle
+            const calcTypes = document.querySelectorAll('.calc-type');
+            calcTypes.forEach(type => {
+                type.addEventListener('click', () => {
+                    calcTypes.forEach(t => t.classList.remove('active'));
+                    type.classList.add('active');
+                    
+                    // Update input placeholder based on calculation type
+                    const amountInput = document.getElementById('amount');
+                    if (type.getAttribute('data-type') === 'add') {
+                        amountInput.placeholder = 'Enter original amount';
+                    } else {
+                        amountInput.placeholder = 'Enter total amount';
+                    }
+                });
+            });
+
+            // VAT rate dropdown change
+            const vatRateSelect = document.getElementById('vat-rate');
+            const customRateGroup = document.getElementById('custom-rate-group');
+            
+            vatRateSelect.addEventListener('change', () => {
+                if (vatRateSelect.value === 'custom') {
+                    customRateGroup.style.display = 'block';
+                } else {
+                    customRateGroup.style.display = 'none';
+                }
+            });
+
+            // VAT calculation
+            document.getElementById('calculate').addEventListener('click', () => {
+                const amount = parseFloat(document.getElementById('amount').value);
+                const calcType = document.querySelector('.calc-type.active').getAttribute('data-type');
+                
+                let vatRate;
+                if (vatRateSelect.value === 'custom') {
+                    vatRate = parseFloat(document.getElementById('custom-rate').value) / 100;
+                } else {
+                    vatRate = parseFloat(vatRateSelect.value) / 100;
+                }
+                
+                if (isNaN(amount) || isNaN(vatRate)) {
+                    alert('Please enter valid numbers');
+                    return;
+                }
+                
+                let originalAmount, vatAmount, totalAmount;
+                
+                if (calcType === 'add') {
+                    // Add VAT calculation
+                    originalAmount = amount;
+                    vatAmount = originalAmount * vatRate;
+                    totalAmount = originalAmount + vatAmount;
+                    
+                    document.getElementById('label1').textContent = 'Original Amount:';
+                    document.getElementById('label2').textContent = 'VAT Amount:';
+                    document.getElementById('label3').textContent = 'Total Amount:';
+                } else {
+                    // Remove VAT calculation
+                    totalAmount = amount;
+                    originalAmount = totalAmount / (1 + vatRate);
+                    vatAmount = totalAmount - originalAmount;
+                    
+                    document.getElementById('label1').textContent = 'Total Amount:';
+                    document.getElementById('label2').textContent = 'VAT Amount:';
+                    document.getElementById('label3').textContent = 'Original Amount:';
+                }
+                
+                document.getElementById('value1').textContent = originalAmount.toFixed(2);
+                document.getElementById('value2').textContent = vatAmount.toFixed(2);
+                document.getElementById('value3').textContent = totalAmount.toFixed(2);
+                
+                document.getElementById('results').style.display = 'block';
+            });
+
+            // Reset button
+            document.getElementById('reset').addEventListener('click', () => {
+                document.getElementById('amount').value = '';
+                vatRateSelect.value = '20';
+                document.getElementById('custom-rate').value = '';
+                customRateGroup.style.display = 'none';
+                document.getElementById('results').style.display = 'none';
+                
+                // Reset to Add VAT mode
+                calcTypes.forEach(t => t.classList.remove('active'));
+                document.querySelector('.calc-type[data-type="add"]').classList.add('active');
+                document.getElementById('amount').placeholder = 'Enter original amount';
+            });
+        });
+    </script>
+</body>
+  </html>
